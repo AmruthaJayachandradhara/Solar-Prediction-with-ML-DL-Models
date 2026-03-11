@@ -36,14 +36,54 @@ print(df['Datetime'].diff(periods=1).value_counts()) #Mostly 1 hour or 2 hour ga
 
 '''Thanks to the large gap in the dataset, the train test split has to avoid the gap. The gap isn't from nulls, but unobserved/unreported data'''
 
-import numpy as np
+#Make sure split isn't random and for temporal data, but also avoids gap from after 5pm on 11/22/2023 to 9am on 01/30/2024.
+
+'''Since we're primarily focused on using weather and environmental features to predict generation and analyzing how these features interact, 
+We are able to do a random split without having to worry about the 68 day gap in the dataset'''
+
+#We will split for train test and validation
 from sklearn.model_selection import train_test_split
 
-from sklearn.model_selection import TimeSeriesSplit
+#Random split is okay
+df_train, df_test = train_test_split(df, test_size=0.15, random_state = 42)
+#Split again for validation set, split will be 70/15/15 for train/validation/test
+df_train, df_val = train_test_split(df_train, test_size = 0.1765, random_state = 42) 
 
-#Make sure split isn't random and for temporal data, but also avoids gap from after 11/22/2023 to 01/30/2024.
-#We will split for train test and validation
+#Check the shape of the splits for df
+print(df_train.shape)
+print(df_val.shape)
+print(df_test.shape)
+
+#%%-------------------------------------------------------------------Handle uncommon features-------------------------------------------------------------------------------------------
+
+'''No uncommmon features since the dataset was already cleaned and came in one set unlike kaggle datasets that come in one set training one set testing'''
+'''The shape horizontally/feature wise is also the same among all so we know there are no uncommon features'''
 
 
-#Since we're using temporal data, we need to split the data without it being randomized
-X_train, X_test, y_train, y_test = train_test_split(df.drop(columns=['Datetime', 'generation']), df['generation'], test_size = 0.2, shuffle = False, stratify = None)
+#%%-------------------------------------------------------------------Handle identifiers---------------------------------------------------------------------------------------------
+
+
+
+
+#%%-------------------------------------------------------------------Handle date time variables---------------------------------------------------------------------------------------------
+
+
+
+
+#%%-------------------------------------------------------------------Handle missing data--------------------------------------------------------------------------------------------------------
+
+'''Missing data was handled in the cleaning phase before EDA'''
+
+
+#%%-------------------------------------------------------------------Encoding the data--------------------------------------------------------------------------------------------------------------
+
+
+#%%--------------------------------------------------------------------Splitting feature and target--------------------------------------------------------------------------------------------
+
+
+
+#%%-----------------------------------------------------------------------Scaling the data---------------------------------------------------------------------------------------
+
+
+
+#%%------------------------------------------------------------------------Feature selection and engineering----------------------------------------------------------------
