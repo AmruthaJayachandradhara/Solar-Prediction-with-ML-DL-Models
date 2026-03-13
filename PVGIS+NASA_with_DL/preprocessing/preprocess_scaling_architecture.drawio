@@ -1,0 +1,96 @@
+<mxfile host="app.diagrams.net" modified="2026-03-13T00:00:00.000Z" agent="Mozilla/5.0" version="24.7.17" type="device">
+  <diagram id="prep-scale" name="Preprocess + Scaling Pipeline">
+    <mxGraphModel dx="1800" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="t1" value="Standalone Preprocessing Architecture: scaling.py" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="720" y="20" width="980" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="in1" value="Input&#xa;datacleaning/processed_solar_2019_2020.csv" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="100" width="320" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="p1" value="scaling.py setup&#xa;Parse datetime UTC&#xa;Sort by datetime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="470" y="90" width="320" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="p2" value="Select modeling columns&#xa;Target: P&#xa;Base: G_i, Gb_i, Gd_i, Gr_i, H_sun, T2m, WS10m, RH, SP, WD10m&#xa;Optional: data_quality" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="860" y="80" width="460" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="p3" value="Temporal features&#xa;hour_sin/cos, month_sin/cos, doy_sin/cos&#xa;is_daytime, is_peak_hours" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1390" y="90" width="360" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="p4" value="Prepared modeling dataframe&#xa;(in-memory, no intermediate CSV)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1820" y="100" width="360" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s0" value="scaling.py main()&#xa;Load cleaned CSV&#xa;Select modeling columns" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="300" width="320" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s1" value="Stage 1: add_temporal_features()&#xa;re-add cyclic + flags&#xa;drop hour/month/day_of_year" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="470" y="300" width="320" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s2" value="Stage 2: filter_data()&#xa;USE_DAYTIME_ONLY: G_i > 0&#xa;optional MIN_DATA_QUALITY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="860" y="300" width="320" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s3" value="Stage 3: temporal_split()&#xa;Train 70% | Val 20% | Test 10%" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="300" width="320" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s4" value="Stage 4: create_scalers() + apply_scaling()&#xa;Spatial: MinMax [0,1]&#xa;Temporal: StandardScaler&#xa;Angle: MinMax [-1,1]&#xa;Target P: MinMax [0,1]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1640" y="285" width="540" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="f1" value="Feature columns (18)&#xa;4 spatial + 4 temporal + 2 angle&#xa;+ 6 cyclic + 2 flags" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="80" y="500" width="360" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s5" value="Stage 5: generate_sequences()&#xa;lookback=2, horizon=1&#xa;X shape: (n,2,18), y shape: (n,)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="510" y="500" width="360" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s6" value="Stage 6: validate_data()&#xa;No NaN/Inf&#xa;Range checks&#xa;Shape consistency&#xa;Sample count" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="940" y="500" width="360" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="s7" value="Stage 7: save_preprocessed_data()&#xa;X_train/y_train&#xa;X_val/y_val&#xa;X_test/y_test&#xa;scalers.pkl, metadata.json, feature_info.json" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="490" width="500" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="out1" value="Output Folder&#xa;preprocessing/preprocessed_data/" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1940" y="505" width="260" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="next" value="Consumed by&#xa;model/dual_stream.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1940" y="650" width="260" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="in1" target="p1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="p1" target="p2"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="p2" target="p3"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="p3" target="p4"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="p4" target="s0"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="2000" y="250"/><mxPoint x="240" y="250"/></Array></mxGeometry></mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="s0" target="s1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="s1" target="s2"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="s2" target="s3"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="s3" target="s4"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="s4" target="f1"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="1910" y="450"/><mxPoint x="260" y="450"/></Array></mxGeometry></mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="f1" target="s5"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="s5" target="s6"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="s6" target="s7"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="s7" target="out1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="out1" target="next"><mxGeometry relative="1" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

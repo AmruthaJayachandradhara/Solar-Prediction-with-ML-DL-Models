@@ -1,0 +1,31 @@
+{
+  "spatial_features": [
+    "G_i",
+    "Gb_i",
+    "Gd_i",
+    "Gr_i"
+  ],
+  "temporal_features": [
+    "T2m",
+    "WS10m",
+    "RH",
+    "SP"
+  ],
+  "angle_features": [
+    "H_sun",
+    "WD10m"
+  ],
+  "cyclic_features": [
+    "hour_sin",
+    "hour_cos",
+    "month_sin",
+    "month_cos",
+    "doy_sin",
+    "doy_cos"
+  ],
+  "flag_features": [
+    "is_daytime",
+    "is_peak_hours"
+  ],
+  "target": "P"
+}

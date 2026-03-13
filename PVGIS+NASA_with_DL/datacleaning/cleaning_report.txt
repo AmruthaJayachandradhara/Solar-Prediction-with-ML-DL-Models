@@ -1,0 +1,38 @@
+Solar PV Data Cleaning Report
+============================================================
+Output file   : processed_solar_2019_2020.csv
+Total rows    : 17,544
+Total columns : 13
+
+Source file contributions:
+  PVGIS hourly 2019-2020  → P, Gb_i, Gd_i, Gr_i, G_i, H_sun, T2m, WS10m, Int
+  NASA POWER 2019-2020    → RH (from RH2M), SP (from PS×1000)
+  PVGIS TMY               → WD10m (seasonal pattern by month-day-hour)
+
+Timestamp alignment:
+  PVGIS  :30 timestamps − 30 min → :00 (hour-start convention)
+  NASA   :00 timestamps → used as-is
+  Merge key: exact datetime match (left join, PVGIS primary)
+
+Unit conversions applied:
+  NASA PS  (kPa) × 1000 → SP (Pa)
+  NASA ALLSKY_SFC_SW_DWN kept for reference only (W/m², no conversion)
+
+Data quality flags:
+  data_quality=0  (clean)               : 17,544
+  data_quality=1  (PVGIS-interpolated)  : 0
+
+Column descriptions:
+  datetime    UTC timestamp (hourly, :00)
+  P           TARGET — PV power output (W) for 1 kWp system @ 30° tilt south
+  G_i         Total global irradiance on inclined panel = Gb_i+Gd_i+Gr_i (W/m²)
+  Gb_i        Beam irradiance on inclined plane (W/m²)
+  Gd_i        Diffuse irradiance on inclined plane (W/m²)
+  Gr_i        Ground-reflected irradiance on inclined plane (W/m²)
+  H_sun       Sun elevation angle above horizon (°), negative=below horizon
+  T2m         Air temperature at 2 m height (°C)
+  WS10m       Wind speed at 10 m height (m/s)
+  RH          Relative humidity at 2 m (%)  [NASA RH2M]
+  SP          Surface atmospheric pressure (Pa)  [NASA PS × 1000]
+  WD10m       Wind direction at 10 m (°)  [TMY seasonal pattern]
+  data_quality 0=clean, 1=PVGIS-interpolated (Int flag)

@@ -1,0 +1,30 @@
+{
+  "feature_columns": [
+    "G_i",
+    "Gb_i",
+    "Gd_i",
+    "Gr_i",
+    "T2m",
+    "WS10m",
+    "RH",
+    "SP",
+    "H_sun",
+    "WD10m",
+    "hour_sin",
+    "hour_cos",
+    "month_sin",
+    "month_cos",
+    "doy_sin",
+    "doy_cos",
+    "is_daytime",
+    "is_peak_hours"
+  ],
+  "lookback_window": 2,
+  "forecast_horizon": 1,
+  "train_size": 6148,
+  "val_size": 1756,
+  "test_size": 877,
+  "n_features": 18,
+  "target_column": "P",
+  "preprocessing_date": "2026-03-13T17:46:15.598549"
+}

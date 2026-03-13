@@ -1,0 +1,107 @@
+<mxfile host="app.diagrams.net" modified="2026-03-13T00:00:00.000Z" agent="Mozilla/5.0" version="24.7.17" type="device">
+  <diagram id="capstone-full" name="Capstone Full Pipeline">
+    <mxGraphModel dx="1800" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <mxCell id="title" value="Capstone Project Architecture (Rajasthan Solar Forecasting)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=18;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="650" y="20" width="900" height="40" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="runall" value="run_all.sh&#xa;Orchestrates full pipeline" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="90" width="260" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="data" value="data/&#xa;download_raw_data.py&#xa;PVGIS + NASA API pulls" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="380" y="90" width="280" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="rawfiles" value="Raw files&#xa;raw_pvgis_*.json/csv&#xa;raw_nasa_*.json/csv" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1f5fe;strokeColor=#0288d1;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="720" y="95" width="280" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="clean" value="datacleaning/&#xa;clean_data.py&#xa;merge, align, validate" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="380" y="250" width="280" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="cleanout" value="processed_solar_2019_2020.csv&#xa;cleaning_report.txt" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e8f5e9;strokeColor=#2e7d32;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="720" y="255" width="320" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="eda" value="EDA/&#xa;eda_complete.py&#xa;stats + plots + SHAP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="380" y="410" width="280" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edaplots" value="EDA/EDA_plots/&#xa;univariate, bivariate,&#xa;temporal, correlation, SHAP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff8e1;strokeColor=#ff8f00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="720" y="415" width="340" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="prep1" value="preprocessing/&#xa;scaling.py&#xa;feature engineering + split + scaling + sequences" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="380" y="570" width="300" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="prepbase" value="No intermediate CSV&#xa;(single-script preprocessing)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffebee;strokeColor=#c62828;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="740" y="595" width="300" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="prep2" value="preprocessing/preprocessed_data/&#xa;X_train/X_val/X_test, y_*.npy&#xa;scalers.pkl, metadata.json, feature_info.json" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="380" y="730" width="300" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="prepout" value="preprocessing/preprocessed_data/&#xa;X_train/X_val/X_test, y_*.npy&#xa;scalers.pkl, metadata.json, feature_info.json" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f3e5f5;strokeColor=#6a1b9a;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="740" y="715" width="430" height="130" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="model" value="model/&#xa;dual_stream.py&#xa;Dual-Stream CNN-LSTM + Attention" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="730" width="320" height="100" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="modelout" value="Model artifacts&#xa;best_model.keras&#xa;final_model.keras + metrics" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff3e0;strokeColor=#ef6c00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1620" y="735" width="300" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="legend" value="Data flow: top to bottom&#xa;Outputs are stored within each module folder" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fafafa;strokeColor=#9e9e9e;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="900" width="420" height="70" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="runall" target="data">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="data" target="rawfiles">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="rawfiles" target="clean">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="clean" target="cleanout">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="cleanout" target="eda">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="eda" target="edaplots">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="cleanout" target="prep1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="prep1" target="prepbase">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="prepbase" target="prep2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="prep2" target="prepout">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="prepout" target="model">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="model" target="modelout">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
