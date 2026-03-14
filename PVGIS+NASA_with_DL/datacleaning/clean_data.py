@@ -23,7 +23,7 @@ from pathlib import Path
 # ──────────────────────────────────────────────────────────────────────────────
 # PATHS
 # ──────────────────────────────────────────────────────────────────────────────
-BASE = Path("/Users/amruthaj/Desktop/Desktop/Capstone")
+BASE = Path("/Users/amruthaj/Documents/GitHub/Solar-Prediction-with-ML-DL-Models/PVGIS+NASA_with_DL")
 DATA_DIR = BASE / "data"
 OUT_DIR = BASE / "datacleaning"
 

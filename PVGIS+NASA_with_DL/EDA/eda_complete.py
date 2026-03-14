@@ -33,7 +33,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 warnings.filterwarnings("ignore")
 
-BASE = Path("/Users/amruthaj/Desktop/Desktop/Capstone")
+BASE = Path("/Users/amruthaj/Documents/GitHub/Solar-Prediction-with-ML-DL-Models/PVGIS+NASA_with_DL")
 OUT  = BASE / "EDA" / "EDA_plots"
 OUT.mkdir(exist_ok=True)
 

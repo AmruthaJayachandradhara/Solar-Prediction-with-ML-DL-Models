@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BASE_DIR="/Users/amruthaj/Desktop/Desktop/Capstone"
+BASE_DIR="/Users/amruthaj/Documents/GitHub/Solar-Prediction-with-ML-DL-Models/PVGIS+NASA_with_DL"
 PYTHON_BIN="$BASE_DIR/.venv/bin/python"
+
+if [[ ! -x "$PYTHON_BIN" ]]; then
+  PYTHON_BIN="/Users/amruthaj/Documents/GitHub/Solar-Prediction-with-ML-DL-Models/.venv/bin/python"
+fi
 
 if [[ ! -x "$PYTHON_BIN" ]]; then
   echo "Error: Python interpreter not found at $PYTHON_BIN"

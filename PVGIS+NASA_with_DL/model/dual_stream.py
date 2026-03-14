@@ -549,7 +549,7 @@ def main():
     print("="*70)
     
     # ==================== LOAD DATA ====================
-    DATA_DIR = Path("/Users/amruthaj/Desktop/Desktop/Capstone/preprocessing/preprocessed_data")
+    DATA_DIR = Path("/Users/amruthaj/Documents/GitHub/Solar-Prediction-with-ML-DL-Models/PVGIS+NASA_with_DL/preprocessing/preprocessed_data")
     
     # Load preprocessed data
     data = load_preprocessed_data(DATA_DIR)

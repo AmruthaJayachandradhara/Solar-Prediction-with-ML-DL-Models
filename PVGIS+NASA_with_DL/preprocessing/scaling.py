@@ -27,8 +27,8 @@ class Config:
     """Preprocessing configuration parameters"""
     
     # Paths
-    DATA_PATH = Path("/Users/amruthaj/Desktop/Desktop/Capstone/datacleaning/processed_solar_2019_2020.csv")
-    OUTPUT_DIR = Path("/Users/amruthaj/Desktop/Desktop/Capstone/preprocessing/preprocessed_data")
+    DATA_PATH = Path("/Users/amruthaj/Documents/GitHub/Solar-Prediction-with-ML-DL-Models/PVGIS+NASA_with_DL/datacleaning/processed_solar_2019_2020.csv")
+    OUTPUT_DIR = Path("/Users/amruthaj/Documents/GitHub/Solar-Prediction-with-ML-DL-Models/PVGIS+NASA_with_DL/preprocessing/preprocessed_data")
     
     # Sequence parameters (as per paper)
     LOOKBACK_WINDOW = 2   # hours of historical data
