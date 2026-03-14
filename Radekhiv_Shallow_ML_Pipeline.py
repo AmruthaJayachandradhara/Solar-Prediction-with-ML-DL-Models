@@ -102,7 +102,50 @@ for col in df_columns:
 
 '''All good for next step'''
 #%%-------------------------------------------------------------------Handle date time variables---------------------------------------------------------------------------------------------
-#For ML models the components of datetime have to be extracted and used
+#For ML models the components of datetime have to be extracted and used as individual features
+
+import datetime as dt
+import numpy as np
+
+#Extract the components of datetime
+''' 
+This is how to extract components of datetime 
+--------------------------------------------------
+
+df_train['year'] = df_train['Datetime'].dt.year
+df_train['month'] = df_train['Datetime'].dt.month
+df_train['day'] = df_train['Datetime'].dt.day
+df_train['hour'] = df_train['Datetime'].dt.hour
+df_train['minute'] = df_train['Datetime'].dt.minute
+df_train['second'] = df_train['Datetime'].dt.second 
+'''
+#Check if datetime is in right dtype
+print(df_train['Datetime'].dtype) #Should return datetime64[ns]
+
+#Now that we know how to extract the components of datetime, let's create a function to try and apply it and simplify the process
+def extract_datetime(df): 
+    df['year'] = df['Datetime'].dt.year
+    df['month'] = df['Datetime'].dt.month
+    df['day'] = df['Datetime'].dt.day
+    df['hour'] = df['Datetime'].dt.hour
+    df['minute'] = df['Datetime'].dt.minute
+    df['second'] = df['Datetime'].dt.second
+    df.drop(columns=['Datetime'], inplace = True)
+    return df
+
+#Apply to splits to check if it works
+df_train = extract_datetime(df_train)
+df_val = extract_datetime(df_val)
+df_test = extract_datetime(df_test)
+
+#Safety check to see if all splits are still good for shape
+print(df_train.shape) #4880 x 29
+print(df_val.shape) #1046 x 29
+print(df_test.shape) #1046 x 29
+
+'''It is worth noting that features like second and minute are not useful since our data is hourly
+Features like day and year might also have little to no contribution in our modeling however,
+I will handle these features in the feature selection and engineering stage for a clean and easy to follow pipeline'''
 
 
 
@@ -111,16 +154,133 @@ for col in df_columns:
 
 '''Missing data was handled in the cleaning phase before EDA'''
 
+#Double check for safety 
+print(df_train.isnull().sum())
+print(df_val.isnull().sum())
+print(df_test.isnull().sum()) #None missing for all 3 splits
+
 
 #%%-------------------------------------------------------------------Encoding the data--------------------------------------------------------------------------------------------------------------
 
+#There are some categorical features in the dataset, so these have to be encoded
+
+def column_check(df):
+    possible_categorical = []
+    for col in df.columns:
+        if df[col].dtype != 'float64' and df[col].dtype != 'int64' and df[col].dtype != 'int32' and df[col].dtype != 'float32':
+            possible_categorical.append(col)
+    return possible_categorical
+
+column_check(df_train)
+
+#Returns conditions, icon, season(our own engineered feature) but I will double check by checking all columns and metadata
+print(df_train.dtypes)
+
+'''According to the metadata, these are the only non-numeric features before one hot encoding let's take a look at the unique value count to see if it'll be a good idea to one hot encode'''
+
+print(df_train['conditions'].nunique()) #10 unique values
+print(df_train['icon'].nunique()) #8 unique values
+print(df_train['season'].nunique()) #Season is four since I remember from engineering it
+
+'''All three features don't have a ridiculous amount of unique values so one hot encoding isn't awful''' 
+
+#Check values of icon and conditions to see if they're similar
+print(df_train['conditions'].value_counts())
+print(df_train['icon'].value_counts())
+
+#both features are pretty similar in what they describe, so it's probably better to drop one before one hot encoding
+'''Looking at the value counts for each, they don't map to each other perfectly 1to1, but they're similar enough. Conditions seems to be more descriptive so I will drop icon'''
+df_train = df_train.drop(columns = ['icon'])
+df_val = df_val.drop(columns = ['icon'])
+df_test = df_test.drop(columns = ['icon'])
+
+#Check if drop is successful
+print(df_train.columns)
+print(df_val.columns)
+print(df_test.columns)
+
+#Temporarily combine all splits to encode and then split again to avoid any issues with one hot encoding
+len_train = len(df_train) #4880
+len_val = len(df_val) #1046
+len_test = len(df_test) #1046
+
+df_combo = pd.concat([df_train, df_val, df_test], axis = 0, ignore_index = True)
+print(df_combo.shape) #6972 x 28
+
+
+#One hot encode season and conditions 
+df_combo = pd.get_dummies(df_combo, columns = ['conditions', 'season'], drop_first = True)
+
+#Check if it worked
+print(df_combo.head())
+print(df_combo.shape) #39 columns now
+
+#Resplit the dataset back into train, val, and test
+df_train = df_combo.iloc[:len_train, :]
+df_val = df_combo.iloc[len_train:len_train+len_val, :]
+df_test = df_combo.iloc[len_train+len_val:, :]
+
+#Check if shape maintained
+print(df_train.shape) #4880 x 39
+print(df_val.shape) #1046 x 39
+print(df_test.shape) #1046 x 39
 
 #%%--------------------------------------------------------------------Splitting feature and target--------------------------------------------------------------------------------------------
+#Here is where splitting feature and target will be handled
+X_train = df_train.drop(columns = ['generation'])
+X_val = df_val.drop(columns = ['generation'])
+X_test = df_test.drop(columns = ['generation'])
 
+#y splits
+y_train = df_train['generation'].values
+y_val = df_val['generation'].values
+y_test = df_test['generation'].values
 
+#Print shape of splits for safety
+print(X_train.shape) #4880 x 38
+print(X_val.shape) #1046 x 38
+print(X_test.shape) #1046 x 38
+
+print(y_train.shape) #4880
+print(y_val.shape) #1046
+print(y_test.shape) #1046
+
+#Check y splits wwere also made into numpy
+print(type(y_train)) #numpy.ndarray
+print(type(y_val)) #numpy.ndarray   
+print(type(y_test)) #numpy.ndarray
 
 #%%-----------------------------------------------------------------------Scaling the data---------------------------------------------------------------------------------------
+#The last step before feature selection and engineering is scaling the data. 
 
+'''regression type models require scaling for both feature and target'''
+
+from sklearn.preprocessing import StandardScaler #Given context of our data we're going to go with standard scaler over min max
+
+scaler = StandardScaler()
+
+#Scaling will be done on the continuous features only, so we reuse function from earlier to identify continuous features instead this time
+'''We remember from that function that only conditions, season, icon were categorical'''
+
+
+
+continuous_columns = [col for col in X_train.columns if not col.startswith('season_') and not col.startswith('conditions_')]
+
+
+#Fit onto training
+X_train_scaled = scaler.fit_transform(X_train[continuous_columns])
+
+#Transform val and test
+X_val_scaled = scaler.transform(X_val[continuous_columns])
+X_test_scaled = scaler.transform(X_test[continuous_columns])
+
+
+'''Correct this so that binary columns are added back during next work session. '''
+# #Add back the categorical features to the scaled continuous features
+# X_train_scaled = pd.DataFrame(X_train_scaled, columns = continuous_columns, index = X_train.index)
+# X_val_scaled = pd.DataFrame(X_val_scaled, columns = continuous_columns, index = X_val.index)
+# X_test_scaled = pd.DataFrame(X_test_scaled, columns = continuous_columns, index = X_test.index)
 
 
 #%%------------------------------------------------------------------------Feature selection and engineering----------------------------------------------------------------
+
