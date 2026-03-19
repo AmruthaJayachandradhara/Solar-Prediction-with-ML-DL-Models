@@ -1,4 +1,3 @@
-#%%------------------------------------------------------Radekhiv shallow ML pipeline-------------------------------------------------------------------------##
 import pandas as pd
 import os
 
@@ -31,7 +30,8 @@ print(df.shape)
 if df['Datetime'].is_monotonic_increasing:
     print('Datetime is in chronological order') #returns true
 
-'''Recall that the dataset had a large gap near the end of the dataset from 11/22/2023(5pm)-01/30/2024(9:00am). This has to be addressed before splitting'''
+'''Recall that the dataset had a large gap near the end of the dataset from 11/22/2023(5pm)-01/30/2024(9:00am). For standard time series modeling this would have needed to be addressed
+For the purposes of this pipeline with time being temporal and not the focus, I don't think it needs to be addressed.'''
 #Make sure period of time in the dataset doesn't have massive gaps or holes
 print(df['Datetime'].diff(periods=1).value_counts()) #This code was run in the cleaning file, it looks different here since night time hours were largely removed, so gaps look more prevalent now
 #The 68 day gap is from 11/2023 to 1/30/2024, one way around this is to just have the period of observation not include this gap
@@ -54,9 +54,9 @@ df_train, df_test = train_test_split(df, test_size=0.15, random_state = 42)
 df_train, df_val = train_test_split(df_train, test_size = 0.1765, random_state = 42) 
 
 #Check the shape of the splits for df
-print(df_train.shape) #4880 x 24
-print(df_val.shape) #1046 x 24
-print(df_test.shape) #1046 x 24
+print(df_train.shape) #4880 x 24 if filter was solarradiation = 0 were removed in cleaning
+print(df_val.shape) #1046 x 24  if filter was solarradiation = 0 were removed in cleaning
+print(df_test.shape) #1046 x 24 if filter was solarradiation = 0 were removed in cleaning
 
 #New split with new filter from cleaning will be 
 #4333 x 24
@@ -163,7 +163,7 @@ print(df_test.shape) #1046 x 29
 Features like day and year might also have little to no contribution in our modeling however,
 I will handle these features in the feature selection and engineering stage for a clean and easy to follow pipeline'''
 
-#New shape following new filter is this 
+#New shape following new of solarradiation > 10 filter is this 
 # (4333, 29)
 # (929, 29)
 # (929, 29)
@@ -276,7 +276,23 @@ print(type(y_test)) #numpy.ndarray
 # (4333,)
 # (929,)
 # (929,)
+#%%
 
+import matplotlib.pyplot as plt
+#Going to try and log transform everything but the target, date features, and encoded features to see if it improves model performance
+#This is what was done in the Shakhovska paper
+
+features_for_transformation = ['temp', 'feelslike', 'dew', 'humidity', 'precip', 'precipprob', 'snow',
+       'snowdepth', 'windgust', 'windspeed', 'winddir', 'sealevelpressure',
+       'cloudcover', 'visibility', 'solarradiation', 'solarenergy', 'uvindex',
+       'severerisk', 'sunheight']
+print(len(features_for_transformation)) 
+
+#Apply log transform to features features_for_transformation for each X split
+# for col in features_for_transformation:
+#     X_train[col] = np.log1p(X_train[col])
+#     X_val[col] = np.log1p(X_val[col])
+#     X_test[col] = np.log1p(X_test[col])
 #%%-----------------------------------------------------------------------Scaling the data---------------------------------------------------------------------------------------
 #The last step before feature selection and engineering is scaling the data. 
 
@@ -481,14 +497,17 @@ from sklearn.svm import SVR
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
 from xgboost import XGBRegressor
-
+from catboost import CatBoostRegressor
 
 
 models = {
     'lr': LinearRegression(),
     'rfr': RandomForestRegressor(),
     'XGB': XGBRegressor(),
-    'svr': SVR()
+    #'svr': SVR(),
+    'svm': SVR(kernel = 'linear'),
+    'catboost': CatBoostRegressor(verbose = 0)
+
 }
 
 #%%----------------------------------------------------------------------Pipelines---------------------------------------------------------------------------------------------
@@ -527,7 +546,19 @@ param_grids['svr'] = {
     'model__epsilon': [0.01, 0.1, 0.5],
     'model__kernel': ['linear', 'rbf'],
 }
+#%%--------------------------------------------------------------------------SVM parameters-----------------------------------------------------------------------------------
+param_grids['svm'] = {
+    'model__tol': [1e-3, 1e-4, 1e-5],
+    'model__C': [0.1, 1, 10],
+    'model__kernel': ['linear', 'rbf'],
+}
 
+#%%--------------------------------------------------------------------------CatBoost parameters-----------------------------------------------------------------------------------
+param_grids['catboost'] = {
+    'model__learning_rate': [0.01, 0.1],
+    'model__n_estimators': [100, 200],
+    'model__max_depth': [3, 5, 7]
+}
 #%%--------------------------------------------------------------------------Grid search and model training-----------------------------------------------------------------------------------
 #Cross validation and hyperparameter tuning will be done using GridSearchCV for each model in the pipeline
 grid_searches = {}
@@ -578,22 +609,41 @@ results_df = pd.DataFrame(data = {
 })
 
 #%%--------------------------------------------------------------------------Model evaluation on test-----------------------------------------------------------------------------------
-# for acronym, gs in grid_searches.items():
-#     print(f"\n--- Results for {acronym.upper()} ---")
+for acronym, gs in grid_searches.items():
+    print(f"\n--- Results for {acronym.upper()} ---")
     
-#     #Best parameters and CV score
-#     print(f"Best Parameters: {gs.best_params_}")
-#     print(f"Best CV RMSE Score: {gs.best_score_:.4f}")
+    #Best parameters and CV score
+    print(f"Best Parameters: {gs.best_params_}")
+    print(f"Best CV RMSE Score: {gs.best_score_:.4f}")
     
-#     #Predict
-#     y_pred_test = gs.best_estimator_.predict(X_test_scaled)
-#     model_predictions[acronym] = y_pred_test
+    #Predict
+    y_pred_test = gs.best_estimator_.predict(X_test_scaled)
+    model_predictions[acronym] = y_pred_test
 
-#     #Confirm prediction shape
-#     print(f"Prediction shape: {y_pred_test.shape} | True labels shape: {y_test.shape}")
+    #Confirm prediction shape
+    print(f"Prediction shape: {y_pred_test.shape} | True labels shape: {y_test.shape}")
 
-#     #Performance Report
-#     print("Metric scoring for the best model:")
-#     print("r2 Score:", r2_score(y_test, y_pred_test))
-#     print("Mean Absolute Error:", mean_absolute_error(y_test, y_pred_test))
-#     print("Root Mean Squared Error:", mean_squared_error(y_test, y_pred_test, squared=False))
+    #Performance Report
+    print("Metric scoring for the best model:")
+    print("r2 Score:", r2_score(y_test, y_pred_test))
+    print("Mean Absolute Error:", mean_absolute_error(y_test, y_pred_test))
+    print("Root Mean Squared Error:", mean_squared_error(y_test, y_pred_test, squared=False))
+
+#%%--------------------------------------------------------------------------Final importance analysis-----------------------------------------------------------------------------------
+#Derive things like feature importance, permutation importance and other analysis
+xgb_model = best_models['XGB']
+feature_importances = xgb_model.named_steps['model'].feature_importances_
+
+#Print feature importances and analyze
+feature_importance_df = pd.DataFrame({
+    'Features' : X_train_scaled.columns, 
+    'Importances': feature_importances
+})
+
+print(feature_importance_df.sort_values(by = 'Importances', ascending = False))
+
+
+
+'''In the next session try log transofmring the target if it's skewed
+Add a rule-based wrappermethod so it only predicts daylight hours and not nighttime hours since generation is zero during nighttime hours, this will make the model more robust and focused on learning the patterns during daylight hours when generation actually occurs
+'''
