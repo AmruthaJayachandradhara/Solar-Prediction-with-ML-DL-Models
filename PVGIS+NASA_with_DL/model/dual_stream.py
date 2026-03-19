@@ -38,7 +38,7 @@ class DSCLANet:
     def __init__(self, 
                  input_shape,
                  cnn_filters=[32, 64, 128],
-                 cnn_kernels=[5, 3, 1],
+                 cnn_kernels=[2, 2, 1],
                  lstm_units=[100, 100],
                  dense_units=[64, 32, 12],
                  dropout_rate=0.2,

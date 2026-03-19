@@ -245,7 +245,7 @@ def apply_scaling(df, scalers, config):
 # STAGE 5: SEQUENCE GENERATION
 # ══════════════════════════════════════════════════════════════════════════════
 
-def create_sequences(data, target, lookback=2, horizon=1):
+def create_sequences(data, target, lookback=6, horizon=1):
     """
     Create sequences for time-series forecasting.
     
