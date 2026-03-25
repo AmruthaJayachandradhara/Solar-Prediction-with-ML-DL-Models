@@ -1,7 +1,7 @@
 """
 Radekhiv Solar PV - Preprocessing Pipeline for Dual Stream CNN-LSTM
 =====================================================================
-Dataset  : Radekhiv_Cleaned.csv  (output of Radekhiv_dataset_cleaning.py)
+Dataset  : ../data/Shakhovska_Cleaned.csv  (output of Radekhiv_dataset_cleaning.py)
 Location : Radekhiv, Western Ukraine  (lat=50.2797, lon=24.6369, alt=231 m)
 Target   : generation  — hourly PV power output (kW)
 Date range: June 2022 – February 2024  (~13,052 rows after cleaning)
@@ -72,7 +72,7 @@ class Config:
     """All tunable parameters in one place."""
 
     # ── Paths ──────────────────────────────────────────────────────────────
-    DATA_PATH  = Path("Radekhiv_Cleaned.csv")        # adjust if needed
+    DATA_PATH  = Path("../data/Shakhovska_Cleaned.csv")  # adjust if needed
     OUTPUT_DIR = Path("radekhiv_preprocessed_data")
 
     # ── Sequence parameters (match PVGIS pipeline & dual_stream.py) ────────
@@ -109,7 +109,7 @@ class Config:
 # ══════════════════════════════════════════════════════════════════════════════
 
 def load_and_validate(config: Config) -> pd.DataFrame:
-    """Load Radekhiv_Cleaned.csv and run basic sanity checks."""
+    """Load ../data/Shakhovska_Cleaned.csv and run basic sanity checks."""
 
     print("\n" + "=" * 70)
     print("STAGE 1: LOAD & VALIDATE")
